@@ -1,17 +1,18 @@
+// models/User.js
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, default: 'user', enum: ['user', 'admin'] } // Role-based access
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  role: { type: String, enum: ['user', 'admin'], default: 'admin' }
 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
 module.exports = mongoose.model('User', userSchema);
-// JWT_SECRET=24eru789uik9098975432sxcvhkiuytr3456789knbvfe456yhg5678ij
